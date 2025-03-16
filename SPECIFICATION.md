@@ -90,7 +90,7 @@ Resources that are helpful but not essential:
 
 ### Example
 
-```markdown
+```
 # MyAwesomeProject
 
 > A library for data analysis and visualization in Python.
@@ -133,8 +133,8 @@ directory, with documentation and examples provided separately.
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributors
 - [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md): Community standards
 - [docs/architecture.md](/docs/architecture.md): Design decisions and architecture
+```
 
-```text
 ## Notes for Implementation
 
 1. Keep descriptions concise and clear

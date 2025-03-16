@@ -3,19 +3,8 @@ name: Generate llms-full.md
 on:
   push:
     branches: [main]
-    paths:
-      - 'llms.md'
-      - 'package.json'
-      - 'LICENSE'
-      - 'docs/llms-full-template.md'
-      - 'scripts/generate-llms-full.js'
   pull_request:
-    paths:
-      - 'llms.md'
-      - 'package.json'
-      - 'LICENSE'
-      - 'docs/llms-full-template.md'
-      - 'scripts/generate-llms-full.js'
+    branches: [main]
   workflow_dispatch:  # Allow manual triggering
 
 # Required permissions for git-auto-commit-action

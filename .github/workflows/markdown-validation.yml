@@ -1,0 +1,49 @@
+name: Markdown Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'pnpm'
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        run_install: false
+    
+    - name: Install dependencies
+      run: pnpm install
+
+    - name: Fix markdown issues
+      run: pnpm fix
+      if: github.event_name == 'pull_request'
+    
+    - name: Commit fixes if needed
+      uses: stefanzweifel/git-auto-commit-action@v4
+      if: github.event_name == 'pull_request'
+      with:
+        commit_message: "style: Fix markdown formatting"
+        file_pattern: "**/*.md"
+    
+    - name: Run linting
+      run: pnpm lint
+    
+    - name: Check formatting
+      run: pnpm check-format
+    
+    - name: Validate llms.md
+      run: pnpm validate

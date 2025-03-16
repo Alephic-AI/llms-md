@@ -1,0 +1,33 @@
+{
+  "name": "llms-md",
+  "version": "0.1.0",
+  "description": "A standard format for guiding Large Language Models (LLMs) in understanding code repositories",
+  "scripts": {
+    "lint": "markdownlint \"**/*.md\" --ignore node_modules",
+    "lint:fix": "node ./node_modules/.bin/markdownlint-cli2-fix \"**/*.md\" \"!node_modules/**\"",
+    "fix:comparison": "node scripts/fix-comparison.js",
+    "format": "prettier --write \"**/*.md\"",
+    "check-format": "prettier --check \"**/*.md\"",
+    "fix": "pnpm fix:comparison && pnpm format",
+    "test": "pnpm lint && pnpm check-format",
+    "validate": "node scripts/validate-llms-md.js"
+  },
+  "keywords": [
+    "llms",
+    "markdown",
+    "documentation",
+    "standard",
+    "ai",
+    "repository"
+  ],
+  "author": "Noah Brier",
+  "license": "MIT",
+  "devDependencies": {
+    "markdownlint-cli": "^0.39.0",
+    "markdownlint-cli2": "^0.12.1",
+    "markdownlint-cli2-formatter-pretty": "^0.0.4",
+    "markdownlint-rule-helpers": "^0.25.0",
+    "prettier": "^3.2.5"
+  },
+  "packageManager": "pnpm@10.6.0+sha512.df0136e797db0cfa7ec1084e77f3bdf81bacbae9066832fbf95cba4c2140ad05e64f316cde51ce3f99ea00a91ffc702d6aedd3c0f450f895e3e7c052fe573cd8"
+}

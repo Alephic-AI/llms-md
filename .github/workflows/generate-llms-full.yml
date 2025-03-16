@@ -31,47 +31,15 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'pnpm'
-    
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-        run_install: false
 
-    # Fallback to npm if pnpm installation fails (for act compatibility)
-    - name: Install dependencies and setup environment
-      run: |
-        # Try to install with pnpm, fall back to npm if pnpm is not available
-        if command -v pnpm &> /dev/null; then
-          echo "Using pnpm to install dependencies"
-          pnpm install
-        else
-          echo "pnpm not found, falling back to npm"
-          npm install
-          # Create a simple pnpm wrapper script for act compatibility
-          echo '#!/bin/bash
-          if [[ "$1" == "generate:full" ]]; then
-            node scripts/generate-llms-full.js
-          else
-            npm "$@"
-          fi' > pnpm
-          chmod +x pnpm
-          export PATH=$PWD:$PATH
-        fi
+    - name: Install dependencies
+      run: npm install
     
     - name: Generate llms-full.md
-      run: |
-        if command -v pnpm &> /dev/null; then
-          echo "Using pnpm to generate llms-full.md"
-          pnpm generate:full
-        else
-          echo "Using node script directly"
-          node scripts/generate-llms-full.js
-        fi
+      run: node scripts/generate-llms-full.js
     
     - name: Commit changes if on main branch
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.ACT != 'true'
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "docs: Update llms-full.md from llms.md [skip ci]"
@@ -79,6 +47,14 @@ jobs:
         commit_user_name: "GitHub Actions"
         commit_user_email: "actions@github.com"
         commit_author: "GitHub Actions <actions@github.com>"
+        
+    - name: Show commit message (for act)
+      if: env.ACT == 'true'
+      run: |
+        echo "When running in GitHub Actions, the following files would be committed:"
+        echo "- llms-full.md"
+        echo "- examples/llms-full.md"
+        echo "Commit message: docs: Update llms-full.md from llms.md [skip ci]"
     
     - name: Show generated files in PR
       if: github.event_name == 'pull_request'

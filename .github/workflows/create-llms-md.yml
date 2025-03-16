@@ -1,0 +1,253 @@
+name: Create llms.md
+
+on:
+  workflow_dispatch:
+    inputs:
+      output_path:
+        description: 'Output path for llms.md (relative to repository root)'
+        required: true
+        default: 'llms.md'
+        type: string
+      extended:
+        description: 'Also generate llms-full.md'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetch all history for analyzing the repository
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm install --no-package-lock js-yaml fs-extra glob path
+
+    - name: Extract repository information
+      id: repo-info
+      run: |
+        node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const yaml = require('js-yaml');
+          const glob = require('glob');
+          const fsExtra = require('fs-extra');
+          
+          // Get repository name
+          const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
+          
+          // Read package.json if exists
+          let description = '';
+          let version = '0.1.0';
+          if (fs.existsSync('package.json')) {
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            description = pkg.description || '';
+            version = pkg.version || '0.1.0';
+          }
+          
+          // Determine main language
+          const fileTypes = glob.sync('**/*', { 
+            ignore: ['node_modules/**', '.git/**'],
+            nodir: true 
+          }).reduce((acc, file) => {
+            const ext = path.extname(file).toLowerCase();
+            if (ext) {
+              acc[ext] = (acc[ext] || 0) + 1;
+            }
+            return acc;
+          }, {});
+          
+          // Sort by count
+          const entries = Object.entries(fileTypes);
+          entries.sort((a, b) => b[1] - a[1]);
+          const languages = entries.slice(0, 3).map(([ext]) => {
+            const langMap = {
+              '.js': 'JavaScript',
+              '.ts': 'TypeScript',
+              '.py': 'Python',
+              '.rb': 'Ruby',
+              '.go': 'Go',
+              '.java': 'Java',
+              '.php': 'PHP',
+              '.cs': 'C#',
+              '.cpp': 'C++',
+              '.c': 'C',
+              '.html': 'HTML',
+              '.css': 'CSS',
+              '.md': 'Markdown',
+              '.json': 'JSON',
+              '.yml': 'YAML',
+              '.yaml': 'YAML',
+              '.xml': 'XML',
+              '.sh': 'Shell',
+              '.rs': 'Rust',
+              '.swift': 'Swift',
+              '.kt': 'Kotlin'
+            };
+            return langMap[ext] || ext.replace('.', '');
+          });
+          
+          // Find important directories
+          const dirs = glob.sync('*/', { 
+            ignore: ['node_modules/', '.git/']
+          }).map(dir => dir.replace(/\\/$/, ''));
+          
+          // Common important directory types
+          const commonDirs = {
+            'src': 'Source code directory',
+            'lib': 'Library code directory',
+            'app': 'Application code directory',
+            'dist': 'Distribution/compiled files',
+            'build': 'Build output directory',
+            'public': 'Public assets directory',
+            'assets': 'Static assets directory',
+            'docs': 'Documentation directory',
+            'test': 'Test files directory',
+            'tests': 'Test files directory',
+            'scripts': 'Utility scripts',
+            'config': 'Configuration files',
+            'examples': 'Example code or usage',
+            'tools': 'Development tools'
+          };
+          
+          // Find important files
+          const importantFiles = [];
+          const commonFiles = [
+            'README.md', 'LICENSE', 'package.json', 'tsconfig.json',
+            'jest.config.js', '.eslintrc.js', '.prettierrc', 'webpack.config.js',
+            'vite.config.js', 'next.config.js', 'babel.config.js',
+            'rollup.config.js', 'requirements.txt', 'setup.py', 'Gemfile',
+            'composer.json', 'Cargo.toml', 'go.mod', 'Makefile',
+            'docker-compose.yml', 'Dockerfile'
+          ];
+          
+          commonFiles.forEach(file => {
+            if (fs.existsSync(file)) {
+              let description = '';
+              switch (file) {
+                case 'README.md': description = 'Project documentation'; break;
+                case 'LICENSE': description = 'License information'; break;
+                case 'package.json': description = 'Node.js dependencies and scripts'; break;
+                case 'tsconfig.json': description = 'TypeScript configuration'; break;
+                case 'requirements.txt': description = 'Python dependencies'; break;
+                case 'setup.py': description = 'Python package configuration'; break;
+                case 'Gemfile': description = 'Ruby dependencies'; break;
+                case 'composer.json': description = 'PHP dependencies'; break;
+                case 'Cargo.toml': description = 'Rust package manifest'; break;
+                case 'go.mod': description = 'Go module definition'; break;
+                case 'Makefile': description = 'Build automation'; break;
+                case 'docker-compose.yml': description = 'Docker services configuration'; break;
+                case 'Dockerfile': description = 'Docker container definition'; break;
+                default: description = 'Configuration file';
+              }
+              importantFiles.push({ file, description });
+            }
+          });
+          
+          // Documentation links
+          const docFiles = glob.sync('{docs/**/*.md,*.md}', { 
+            ignore: ['node_modules/**', 'README.md', 'LICENSE.md']
+          });
+          
+          // Generate content for llms.md
+          const output = `# ${repoName}
+> ${description || 'Repository for ' + repoName}
+
+## Overview
+- Key Technologies: ${languages.join(', ') || 'Not specified'}
+- Main Functionality: ${description ? description.split('.')[0] : 'Not specified'}
+
+## Core Directories
+${dirs.map(dir => {
+  const desc = commonDirs[dir] || `${dir} directory`;
+  return `- [${dir}/](/${dir}/): ${desc}`;
+}).join('\\n')}
+
+## Important Files
+${importantFiles.map(({ file, description }) => 
+  `- [${file}](/${file}): ${description}`
+).join('\\n')}
+${fs.existsSync('README.md') ? '' : '- [README.md](/README.md): Project documentation'}
+
+## Documentation
+${docFiles.length > 0 ? docFiles.map(file => 
+  `- [${path.basename(file)}](/${file}): ${path.basename(file, '.md').replace(/-/g, ' ').replace(/^./, c => c.toUpperCase())}`
+).join('\\n') : '- No specific documentation files found'}
+
+## Optional
+- Consider adding more information to help LLMs understand your repository
+`;
+          
+          fs.writeFileSync('${process.env.GITHUB_WORKSPACE}/${process.env.INPUT_OUTPUT_PATH}', output);
+          console.log('Generated llms.md at ${process.env.INPUT_OUTPUT_PATH}');
+          
+          // Create summary
+          const summary = {
+            repoName,
+            description,
+            version,
+            languages,
+            directories: dirs.length,
+            importantFiles: importantFiles.length,
+            docFiles: docFiles.length,
+            outputPath: '${process.env.INPUT_OUTPUT_PATH}'
+          };
+          
+          fs.writeFileSync(process.env.GITHUB_OUTPUT, 
+            Object.entries(summary)
+              .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
+              .join('\\n')
+          );
+        "
+      env:
+        INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+
+    - name: Generate extended llms-full.md if requested
+      if: inputs.extended == true
+      run: |
+        # Only run if we generated the standard llms.md file
+        if [[ -f "${{ inputs.output_path }}" ]]; then
+          # Check if we have the generation script
+          if [[ -f "scripts/generate-llms-full.js" ]]; then
+            # Setup the output path for llms-full.md
+            OUTPUT_FULL="${{ inputs.output_path }}"
+            OUTPUT_FULL="${OUTPUT_FULL%.md}-full.md"
+            node scripts/generate-llms-full.js "${{ inputs.output_path }}" "$OUTPUT_FULL"
+            echo "Generated extended format at $OUTPUT_FULL"
+          else
+            echo "Warning: scripts/generate-llms-full.js not found. Cannot generate extended format."
+          fi
+        fi
+
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "docs: Add llms.md to repository"
+        file_pattern: "${{ inputs.output_path }} ${{ inputs.output_path == 'llms.md' && inputs.extended == true && 'llms-full.md' || '' }}"
+        commit_user_name: "GitHub Actions"
+        commit_user_email: "actions@github.com"
+        commit_author: "GitHub Actions <actions@github.com>"
+    
+    - name: Show summary
+      run: |
+        echo "## Generated llms.md File" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Successfully generated llms.md at \`${{ inputs.output_path }}\`" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ inputs.extended }}" == "true" ]; then
+          OUTPUT_FULL="${{ inputs.output_path }}"
+          OUTPUT_FULL="${OUTPUT_FULL%.md}-full.md"
+          if [ -f "$OUTPUT_FULL" ]; then
+            echo "✅ Also generated extended format at \`$OUTPUT_FULL\`" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The file has been committed to the repository." >> $GITHUB_STEP_SUMMARY

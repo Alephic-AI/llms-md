@@ -1,0 +1,91 @@
+name: Generate llms-full.md
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'llms.md'
+      - 'package.json'
+      - 'LICENSE'
+      - 'docs/llms-full-template.md'
+      - 'scripts/generate-llms-full.js'
+  pull_request:
+    paths:
+      - 'llms.md'
+      - 'package.json'
+      - 'LICENSE'
+      - 'docs/llms-full-template.md'
+      - 'scripts/generate-llms-full.js'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetch all history for git contributors
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'pnpm'
+    
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        run_install: false
+
+    # Fallback to npm if pnpm installation fails (for act compatibility)
+    - name: Install dependencies and setup environment
+      run: |
+        # Try to install with pnpm, fall back to npm if pnpm is not available
+        if command -v pnpm &> /dev/null; then
+          echo "Using pnpm to install dependencies"
+          pnpm install
+        else
+          echo "pnpm not found, falling back to npm"
+          npm install
+          # Create a simple pnpm wrapper script for act compatibility
+          echo '#!/bin/bash
+          if [[ "$1" == "generate:full" ]]; then
+            node scripts/generate-llms-full.js
+          else
+            npm "$@"
+          fi' > pnpm
+          chmod +x pnpm
+          export PATH=$PWD:$PATH
+        fi
+    
+    - name: Generate llms-full.md
+      run: |
+        if command -v pnpm &> /dev/null; then
+          echo "Using pnpm to generate llms-full.md"
+          pnpm generate:full
+        else
+          echo "Using node script directly"
+          node scripts/generate-llms-full.js
+        fi
+    
+    - name: Commit changes if on main branch
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "docs: Update llms-full.md from llms.md [skip ci]"
+        file_pattern: "llms-full.md examples/llms-full.md"
+        commit_user_name: "GitHub Actions"
+        commit_user_email: "actions@github.com"
+        commit_author: "GitHub Actions <actions@github.com>"
+    
+    - name: Show generated files in PR
+      if: github.event_name == 'pull_request'
+      run: |
+        echo "## Generated llms-full.md Files" >> $GITHUB_STEP_SUMMARY
+        echo "The following files have been generated:" >> $GITHUB_STEP_SUMMARY
+        echo "- llms-full.md" >> $GITHUB_STEP_SUMMARY
+        echo "- examples/llms-full.md" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "These files will be automatically committed when merged to main." >> $GITHUB_STEP_SUMMARY

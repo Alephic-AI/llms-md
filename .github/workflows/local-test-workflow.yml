@@ -1,0 +1,60 @@
+name: Local Test Workflow
+
+on: workflow_dispatch
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Generate basic llms.md
+      run: |
+        # Simple JavaScript to create llms.md
+        node -e "
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Generate content
+          const repoName = path.basename(process.cwd());
+          const content = '# ' + repoName + '\\n> Repository for ' + repoName + '\\n\\n## Overview\\n- Key Technologies: JavaScript, Markdown\\n- Main Functionality: Documentation\\n\\n## Core Directories\\n- List your directories here\\n\\n## Important Files\\n- [README.md](/README.md): Documentation\\n\\n## Documentation\\n- Add links here\\n\\n## Optional\\n- Additional information';
+          
+          // Write to file
+          fs.writeFileSync('llms.md', content);
+          console.log('Generated basic llms.md');
+        "
+        
+        # Display the generated file
+        echo "=== Generated llms.md ==="
+        cat llms.md
+    
+    - name: Generate basic llms-full.md
+      run: |
+        # Simple bash script to create llms-full.md
+        REPO_NAME=$(basename $(pwd))
+        
+        echo "# $REPO_NAME" > llms-full.md
+        echo "> Repository for $REPO_NAME" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Overview" >> llms-full.md
+        echo "- Key Technologies: JavaScript, Markdown" >> llms-full.md
+        echo "- Main Functionality: Documentation" >> llms-full.md
+        echo "- Version: 0.1.0" >> llms-full.md
+        echo "- License: MIT" >> llms-full.md
+        echo "- Last Updated: $(date +%Y-%m-%d)" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Core Directories" >> llms-full.md
+        echo "- List directories here" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Important Files" >> llms-full.md
+        echo "- [README.md](/README.md): Documentation" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Documentation" >> llms-full.md
+        echo "- Add links here" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Optional" >> llms-full.md
+        echo "- Additional information" >> llms-full.md
+        
+        echo "=== Generated llms-full.md ==="
+        cat llms-full.md

@@ -1,0 +1,85 @@
+name: Generate Basic llms-full.md
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    
+    - name: Generate llms-full.md
+      run: |
+        # Read llms.md
+        if [ -f "llms.md" ]; then
+          echo "Reading llms.md..."
+          REPO_NAME=$(grep -m 1 "^# " llms.md | sed 's/^# //')
+          DESCRIPTION=$(grep -m 1 "^> " llms.md | sed 's/^> //')
+        else
+          echo "llms.md not found, using default values..."
+          REPO_NAME=$(basename $(pwd))
+          DESCRIPTION="Repository for ${REPO_NAME}"
+        fi
+        
+        # Create a basic llms-full.md
+        cat > llms-full.md << EOF
+# ${REPO_NAME}
+> ${DESCRIPTION}
+
+## Overview
+- Key Technologies: Markdown, JavaScript
+- Main Functionality: Repository documentation
+- Version: 0.1.0
+- License: MIT License
+- Last Updated: $(date +%Y-%m-%d)
+
+## Core Directories
+- List core directories here
+
+## Important Files
+- [README.md](/README.md): Project documentation
+- [LICENSE](/LICENSE): License information
+
+## Documentation
+- Add documentation links here
+
+## Maintainers
+- Primary: Add your name here
+- Contributors: Add contributors here
+
+## API Information
+This project does not provide an API.
+
+## Attribution Requirements
+When using or referencing this project, please include attribution.
+
+## Content Restrictions
+All content in this repository is public and can be used by AI systems.
+
+## Error Handling and Fallbacks
+If any links or resources in this repository are unavailable, check the GitHub repository.
+
+## Integration Guidelines
+Follow the documentation to integrate with this project.
+
+## Human Resources
+This file provides comprehensive information about the repository for both human readers and AI systems.
+
+## Optional
+- Add additional information here
+EOF
+        
+        echo "Created basic llms-full.md"
+    
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "docs: Add basic llms-full.md"
+        file_pattern: "llms-full.md"

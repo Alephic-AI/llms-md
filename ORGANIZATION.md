@@ -4,7 +4,7 @@ This document outlines the organizational structure for the llms.md standard rep
 
 ## Directory Structure
 
-```bash
+`````bash
 llms-md/
 ├── examples/               # Example llms.md files for different project types
 │   ├── web-app.md          # Example for web applications
@@ -26,8 +26,7 @@ llms-md/
 └── .github/                # GitHub-specific files
     ├── workflows/          # GitHub Actions workflows
     └── ...
-```
-
+```text
 ## Repository Components
 
 ### 1. Core Specification Files
@@ -104,11 +103,13 @@ When contributing to the repository:
 
 ## Directory Purpose Reference
 
-| Directory    | Purpose                                      | Example Files                        |
-| ------------ | -------------------------------------------- | ------------------------------------ |
-| `/`          | Core specification and configuration files   | README.md, SPECIFICATION.md         |
-| `examples/`  | Example implementations for different cases  | web-app.md, python-library.md       |
-| `scripts/`   | Utility scripts for working with llms.md     | validate-llms-md.js                 |
-| `docs/`      | Extended documentation and guides            | best-practices.md, integrations.md  |
-| `tools/`     | Integration tools for different platforms    | vscode-extension/, github-action/   |
-| `.github/`   | GitHub-specific configuration                | workflows/markdown-validation.yml   |
+| Directory   | Purpose                                     | Example Files                      |
+| ----------- | ------------------------------------------- | ---------------------------------- |
+| `/`         | Core specification and configuration files  | README.md, SPECIFICATION.md        |
+| `examples/` | Example implementations for different cases | web-app.md, python-library.md      |
+| `scripts/`  | Utility scripts for working with llms.md    | validate-llms-md.js                |
+| `docs/`     | Extended documentation and guides           | best-practices.md, integrations.md |
+| `tools/`    | Integration tools for different platforms   | vscode-extension/, github-action/  |
+| `.github/`  | GitHub-specific configuration               | workflows/markdown-validation.yml  |
+````text
+`````

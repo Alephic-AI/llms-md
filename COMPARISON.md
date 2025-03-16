@@ -24,17 +24,17 @@ contexts:
 
 ## Differences
 
-| Feature              | llms.txt                               | llms.md                                   |
-| -------------------- | -------------------------------------- | ----------------------------------------- |
-| **Primary Content**  | Website content and pages              | Code organization and structure           |
-| **Typical Sections** | Getting Started, FAQ, API, etc.        | Core Directories, Important Files,        |
-|                      |                                        | Dependencies, etc.                        |
-| **Link Targets**     | Primarily URLs                         | File and directory paths in the           |
-|                      |                                        | repository                                |
-| **Audience**         | Website visitors and search assistants | Developers and code assistants            |
-| **Placement**        | Website root                           | Repository root                           |
-|                      | (e.g., example.com/llms.txt)           |                                           |
-| **Context**          | Web navigation and content discovery   | Code navigation and understanding         |
+| Feature              | llms.txt                               | llms.md                            |
+| -------------------- | -------------------------------------- | ---------------------------------- |
+| **Primary Content**  | Website content and pages              | Code organization and structure    |
+| **Typical Sections** | Getting Started, FAQ, API, etc.        | Core Directories, Important Files, |
+|                      |                                        | Dependencies, etc.                 |
+| **Link Targets**     | Primarily URLs                         | File and directory paths in the    |
+|                      |                                        | repository                         |
+| **Audience**         | Website visitors and search assistants | Developers and code assistants     |
+| **Placement**        | Website root                           | Repository root                    |
+|                      | (e.g., example.com/llms.txt)           |                                    |
+| **Context**          | Web navigation and content discovery   | Code navigation and understanding  |
 
 ## Use Cases
 

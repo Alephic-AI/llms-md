@@ -1,0 +1,41 @@
+name: Create Basic llms.md
+
+on:
+  workflow_dispatch:
+    inputs:
+      output_path:
+        description: 'Output path for llms.md'
+        required: true
+        default: 'llms.md'
+        type: string
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    
+    - name: Create llms.md
+      run: |
+        # Create a simple JavaScript to generate llms.md
+        echo 'const fs = require("fs");' > create-llms.js
+        echo 'const path = require("path");' >> create-llms.js
+        echo 'const repoName = path.basename(process.cwd());' >> create-llms.js
+        echo 'const content = "# " + repoName + "\n> Repository for " + repoName + "\n\n## Overview\n- Key Technologies: JavaScript, Markdown\n- Main Functionality: Documentation\n\n## Core Directories\n- List directories here\n\n## Important Files\n- [README.md](/README.md): Documentation\n\n## Documentation\n- Add links here\n\n## Optional\n- Add more information";' >> create-llms.js
+        echo 'fs.writeFileSync(process.argv[2] || "llms.md", content);' >> create-llms.js
+        echo 'console.log("Generated basic llms.md");' >> create-llms.js
+        
+        # Run the script
+        node create-llms.js "${{ inputs.output_path }}"
+    
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "docs: Add basic llms.md"
+        file_pattern: "${{ inputs.output_path }}"

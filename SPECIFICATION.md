@@ -90,7 +90,7 @@ Resources that are helpful but not essential:
 
 ### Example
 
-```markdown
+`````markdown
 # MyAwesomeProject
 
 > A library for data analysis and visualization in Python.
@@ -133,8 +133,8 @@ directory, with documentation and examples provided separately.
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributors
 - [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md): Community standards
 - [docs/architecture.md](/docs/architecture.md): Design decisions and architecture
-```
 
+`````text
 ## Notes for Implementation
 
 1. Keep descriptions concise and clear
@@ -143,8 +143,85 @@ directory, with documentation and examples provided separately.
 4. Highlight the most important parts of your codebase
 5. Consider what information would be most valuable to an AI assistant
 
+## Extended Format (llms-full.md)
+
+In addition to the basic llms.md format, this standard also supports an extended format called
+llms-full.md. This extended format provides more comprehensive metadata and detailed guidance for AI
+systems.
+
+### Extended Sections
+
+The extended format includes these additional sections:
+
+#### `## Maintainers`
+
+Information about project maintainers and contributors:
+
+- Primary maintainer name and contact information
+- List of key contributors
+
+#### `## API Information`
+
+Details about APIs provided by the project:
+
+- Endpoints and usage
+- Rate limits and quotas
+- Authentication requirements
+
+#### `## Attribution Requirements`
+
+How to properly attribute the project:
+
+- Citation format
+- Usage restrictions
+- Acknowledgment requirements
+
+#### `## Content Restrictions`
+
+Guidelines on how content can be used:
+
+- Public vs. private sections
+- What can be used by AI systems
+- Excluded or sensitive content
+
+#### `## Error Handling and Fallbacks`
+
+What to do when resources are unavailable:
+
+- Alternative resources
+- Caching strategies
+- Fallback endpoints
+
+#### `## Integration Guidelines`
+
+How to integrate with the project:
+
+- Step-by-step instructions
+- Best practices
+- Common pitfalls
+
+#### `## Human Resources`
+
+Meta-information about the file itself:
+
+- Purpose of the llms-full.md file
+- How it should be used by humans and AI systems
+- When to refer to other documentation
+
+### Extended Example
+
+See [examples/llms-full.md](./examples/llms-full.md) for a complete example of the extended format.
+
 ## Relationship to llms.txt
 
 The llms.md standard is inspired by and compatible with the
 [llms.txt standard](https://www.llmstxt.org/) for websites. While they serve similar purposes,
 llms.md is specifically tailored for code repositories with appropriate sections and formats.
+
+Like the llms.txt standard, which has a basic format and an extended llms-full.txt format, the
+llms.md standard supports both a basic format (llms.md) and an extended format (llms-full.md) to
+provide different levels of detail depending on the needs of the project.
+```text
+````text
+`````
+`````

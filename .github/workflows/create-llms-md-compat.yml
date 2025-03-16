@@ -1,0 +1,123 @@
+name: Create llms.md (Compatibility Version)
+
+on:
+  workflow_dispatch:
+    inputs:
+      output_path:
+        description: 'Output path for llms.md (relative to repository root)'
+        required: true
+        default: 'llms.md'
+        type: string
+      extended:
+        description: 'Also generate llms-full.md'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Fetch all history for analyzing the repository
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Install dependencies
+      run: npm install --no-package-lock js-yaml fs-extra glob path
+    
+    - name: Create basic llms.md
+      run: |
+        # Create a simple script to generate a basic llms.md file
+        cat > generate-basic-llms.js << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+
+        // Get repository name from directory or use placeholder
+        const repoName = path.basename(process.cwd());
+        
+        // Generate a very basic llms.md
+        const content = `# ${repoName}
+> Repository for ${repoName}
+
+## Overview
+- Key Technologies: JavaScript, Markdown
+- Main Functionality: Repository documentation for LLMs
+
+## Core Directories
+- List your core directories here
+
+## Important Files
+- [README.md](/README.md): Project documentation
+- [LICENSE](/LICENSE): License information
+
+## Documentation
+- Add links to documentation files
+
+## Optional
+- Consider adding more information to help LLMs understand your repository
+`;
+
+        // Write to the output file
+        const outputPath = process.argv[2] || 'llms.md';
+        fs.writeFileSync(outputPath, content);
+        console.log(`Basic llms.md created at ${outputPath}`);
+        EOF
+        
+        # Make the script executable
+        chmod +x generate-basic-llms.js
+        
+        # Run the script
+        node generate-basic-llms.js "${{ inputs.output_path }}"
+        
+        echo "Created basic llms.md at ${{ inputs.output_path }}"
+    
+    - name: Generate extended llms-full.md if requested
+      if: inputs.extended == true && hashFiles('scripts/generate-llms-full.js') != ''
+      run: |
+        # Check if we have the input file
+        if [[ -f "${{ inputs.output_path }}" ]]; then
+          # Check if we have the generation script
+          if [[ -f "scripts/generate-llms-full.js" ]]; then
+            # Setup the output path for llms-full.md
+            OUTPUT_FULL="${{ inputs.output_path }}"
+            OUTPUT_FULL="${OUTPUT_FULL%.md}-full.md"
+            node scripts/generate-llms-full.js "${{ inputs.output_path }}" "$OUTPUT_FULL"
+            echo "Generated extended format at $OUTPUT_FULL"
+          else
+            echo "Warning: scripts/generate-llms-full.js not found. Cannot generate extended format."
+          fi
+        fi
+    
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "docs: Add basic llms.md to repository"
+        file_pattern: "${{ inputs.output_path }} ${{ inputs.output_path == 'llms.md' && inputs.extended == true && hashFiles('scripts/generate-llms-full.js') != '' && 'llms-full.md' || '' }}"
+        commit_user_name: "GitHub Actions"
+        commit_user_email: "actions@github.com"
+        commit_author: "GitHub Actions <actions@github.com>"
+    
+    - name: Show summary
+      run: |
+        echo "## Generated Files" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Created basic llms.md at \`${{ inputs.output_path }}\`" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ inputs.extended }}" == "true" ] && [ -f "scripts/generate-llms-full.js" ]; then
+          OUTPUT_FULL="${{ inputs.output_path }}"
+          OUTPUT_FULL="${OUTPUT_FULL%.md}-full.md"
+          if [ -f "$OUTPUT_FULL" ]; then
+            echo "✅ Also generated extended format at \`$OUTPUT_FULL\`" >> $GITHUB_STEP_SUMMARY
+          fi
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Files have been committed to the repository." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "⚠️ This is a simplified version created for compatibility with local testing tools like act." >> $GITHUB_STEP_SUMMARY
+        echo "For full functionality, please use the regular create-llms-md.yml workflow." >> $GITHUB_STEP_SUMMARY

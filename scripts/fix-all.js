@@ -18,6 +18,14 @@ try {
   console.error('❌ Error running fix-ordered-lists:', error.message);
 }
 
+// Run the excess backticks fix script
+try {
+  console.log('\n🔗 Fixing excess backticks...');
+  require('./fix-excess-backticks');
+} catch (error) {
+  console.error('❌ Error running fix-excess-backticks:', error.message);
+}
+
 // Run the code blocks fix script
 try {
   console.log('\n📦 Fixing code blocks...');

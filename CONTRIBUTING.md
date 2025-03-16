@@ -37,7 +37,7 @@ There are several ways you can contribute to this project:
 
 Before submitting a pull request, please run the following checks:
 
-`````bash
+```bash
 # Install dependencies
 pnpm install
 
@@ -71,4 +71,6 @@ By participating in this project you agree to abide by its terms.
 By contributing to this project, you agree that your contributions will be licensed under the same
 [MIT License](LICENSE) that covers the project.
 ````text
-`````
+`````text
+``````text
+```

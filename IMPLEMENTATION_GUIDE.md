@@ -25,7 +25,7 @@ Before creating your llms.md file, take some time to analyze your repository:
 
 Create a new file named `llms.md` in the root of your repository with this basic structure:
 
-`````markdown
+```markdown
 # Repository Name
 
 > Brief description of the repository.
@@ -47,7 +47,7 @@ Additional context about the project (optional).
 
 ## Optional
 
-`````text
+```text
 ### 3. Fill in the Content
 
 Fill in each section with relevant information about your repository:
@@ -135,5 +135,9 @@ repositories.
 - [llms.txt standard](https://www.llmstxt.org/): The inspiration for llms.md
 ```text
 ````text
-`````
-`````
+`````text
+`````text
+``````text
+``````text
+```
+```

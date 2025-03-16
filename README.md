@@ -25,7 +25,7 @@ standard addresses this by:
 
 An llms.md file follows this basic structure:
 
-`````markdown
+```markdown
 # Repository Name
 
 > Brief description of the repository and its purpose.
@@ -59,7 +59,7 @@ Additional context or explanation about the project's organization.
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributors
 - [CHANGELOG.md](/CHANGELOG.md): Version history
 
-`````text
+```text
 ## Getting Started
 
 ### Manual Creation
@@ -248,5 +248,9 @@ Contributions to improve the llms.md standard are welcome! Please see our
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 ````text
 ````text
-`````
-`````
+`````text
+`````text
+``````text
+``````text
+```
+```

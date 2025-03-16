@@ -41,7 +41,7 @@ This project does not provide an API.
 
 When using or referencing this project, please include the following attribution:
 
-`````text
+```text
 llms-md - A standard format for guiding Large Language Models (LLMs) in understanding code repositories
 Noah Brier
 URL: https://github.com/noah/llms-md
@@ -73,4 +73,6 @@ guidelines.
 
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributing to the standard
 ````text
-`````
+`````text
+``````text
+```

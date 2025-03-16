@@ -90,7 +90,7 @@ Resources that are helpful but not essential:
 
 ### Example
 
-`````markdown
+```markdown
 # MyAwesomeProject
 
 > A library for data analysis and visualization in Python.
@@ -134,7 +134,7 @@ directory, with documentation and examples provided separately.
 - [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md): Community standards
 - [docs/architecture.md](/docs/architecture.md): Design decisions and architecture
 
-`````text
+```text
 ## Notes for Implementation
 
 1. Keep descriptions concise and clear
@@ -223,5 +223,9 @@ llms.md standard supports both a basic format (llms.md) and an extended format (
 provide different levels of detail depending on the needs of the project.
 ```text
 ````text
-`````
-`````
+`````text
+`````text
+``````text
+``````text
+```
+```

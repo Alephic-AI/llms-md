@@ -4,7 +4,7 @@ This document outlines the organizational structure for the llms.md standard rep
 
 ## Directory Structure
 
-`````bash
+```bash
 llms-md/
 ├── examples/               # Example llms.md files for different project types
 │   ├── web-app.md          # Example for web applications
@@ -112,4 +112,6 @@ When contributing to the repository:
 | `tools/`    | Integration tools for different platforms   | vscode-extension/, github-action/  |
 | `.github/`  | GitHub-specific configuration               | workflows/markdown-validation.yml  |
 ````text
-`````
+`````text
+``````text
+```

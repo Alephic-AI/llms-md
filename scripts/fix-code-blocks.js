@@ -15,6 +15,7 @@ const targetFiles = [
 ];
 
 // Regular expression to find code blocks without language specification
+// that need to be fixed (e.g., empty code blocks or blocks needing a language)
 const codeBlockRegex = /```\s*\n/g;
 
 // Process each file
@@ -31,8 +32,9 @@ targetFiles.forEach(filePath => {
     // Read file content
     let content = fs.readFileSync(resolvedPath, 'utf8');
     
-    // Replace code blocks without language with 'text' language
-    const modifiedContent = content.replace(codeBlockRegex, '```text\n');
+    // For now, we'll keep code blocks as they are without adding a language specifier
+    // This avoids the issue of adding unnecessary backticks
+    const modifiedContent = content;
     
     // Write back to file if changes were made
     if (content !== modifiedContent) {
@@ -83,11 +85,12 @@ try {
         // Reset regex lastIndex
         codeBlockRegex.lastIndex = 0;
         
-        // Fix the file
-        const modifiedContent = content.replace(codeBlockRegex, '```text\n');
-        fs.writeFileSync(file, modifiedContent);
-        fixedCount++;
-        console.log(`✅ Fixed code blocks in ${file}`);
+        // Keep code blocks as they are without adding a language specifier
+        // This avoids the issue of adding unnecessary backticks
+        // const modifiedContent = content.replace(codeBlockRegex, '```text\n');
+        // fs.writeFileSync(file, modifiedContent);
+        // fixedCount++;
+        console.log(`ℹ️ Skipping code block fix in ${file} to avoid extra backticks`);
       }
     } catch (error) {
       console.error(`❌ Error processing ${file}:`, error.message);

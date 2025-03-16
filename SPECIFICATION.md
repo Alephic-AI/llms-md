@@ -90,7 +90,7 @@ Resources that are helpful but not essential:
 
 ### Example
 
-```
+```text
 # MyAwesomeProject
 
 > A library for data analysis and visualization in Python.
@@ -133,8 +133,7 @@ directory, with documentation and examples provided separately.
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributors
 - [CODE_OF_CONDUCT.md](/CODE_OF_CONDUCT.md): Community standards
 - [docs/architecture.md](/docs/architecture.md): Design decisions and architecture
-```
-
+```text
 ## Notes for Implementation
 
 1. Keep descriptions concise and clear
@@ -222,10 +221,11 @@ Like the llms.txt standard, which has a basic format and an extended llms-full.t
 llms.md standard supports both a basic format (llms.md) and an extended format (llms-full.md) to
 provide different levels of detail depending on the needs of the project.
 ```text
-````text
-`````text
-`````text
-``````text
-``````text
-```
-```
+```text
+```text
+```text
+```text
+```text
+```text
+```text
+```````

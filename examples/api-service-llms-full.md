@@ -83,7 +83,7 @@ Authentication methods:
 
 When using or referencing this project, please include the following attribution:
 
-```md
+```````md
 API Service Framework v2.3.1 Copyright (c) 2025 Example Corp
 https://github.com/example/api-service-framework
 
@@ -174,11 +174,13 @@ discrepancies between this file and the actual code behavior, please open an iss
 - [ROADMAP.md](/ROADMAP.md): Upcoming features and development plans
 - [docs/examples.md](/docs/examples.md): Additional code examples beyond the examples directory
 - [docs/faq.md](/docs/faq.md): Frequently asked questions
-````text
-````text
-`````text
-`````text
-``````text
-``````text
-```
-```
+```text
+```text
+```text
+```text
+```text
+```text
+```text
+```text
+```````
+```````

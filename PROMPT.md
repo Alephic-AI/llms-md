@@ -61,7 +61,7 @@ Before creating the llms.md file, synthesize your findings:
 
 Based on your analysis, generate a Markdown file with these sections:
 
-```markdown
+```````markdown
 # [Repository Name]
 
 > [1-2 sentence description of the repository's purpose]
@@ -170,10 +170,12 @@ After completing llms.md, create an extended version with:
 
 Always prioritize being helpful to other AI systems trying to understand the repository structure.
 ```text
-````text
-`````text
-`````text
-``````text
-``````text
-```
-```
+```text
+```text
+```text
+```text
+```text
+```text
+```text
+```````
+```````

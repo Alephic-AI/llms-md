@@ -3,12 +3,19 @@ name: Generate Basic llms-full.md
 on:
   workflow_dispatch:
 
+# Required permissions for git-auto-commit-action
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v3
+      with:
+        persist-credentials: true
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Setup Node.js
       uses: actions/setup-node@v3

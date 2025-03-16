@@ -34,185 +34,202 @@ jobs:
       with:
         node-version: '18'
     
-    - name: Install dependencies
-      run: npm install --no-package-lock js-yaml fs-extra glob path
-
-    - name: Extract repository information
-      id: repo-info
+    - name: Create script file
       run: |
-        node -e "
-          const fs = require('fs');
-          const path = require('path');
-          const yaml = require('js-yaml');
-          const glob = require('glob');
-          const fsExtra = require('fs-extra');
-          
-          // Get repository name
-          const repoName = process.env.GITHUB_REPOSITORY.split('/')[1];
-          
-          // Read package.json if exists
-          let description = '';
-          let version = '0.1.0';
-          if (fs.existsSync('package.json')) {
-            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            description = pkg.description || '';
-            version = pkg.version || '0.1.0';
+        # Create a Node.js script to generate llms.md
+        cat > generate-llms-md.js << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const glob = require('glob');
+        
+        // Get repository name
+        const repoPath = process.cwd();
+        const repoName = path.basename(repoPath);
+        
+        // Read package.json if exists
+        let description = '';
+        let version = '0.1.0';
+        if (fs.existsSync('package.json')) {
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          description = pkg.description || '';
+          version = pkg.version || '0.1.0';
+        }
+        
+        // Determine main language
+        const fileTypes = glob.sync('**/*', { 
+          ignore: ['node_modules/**', '.git/**'],
+          nodir: true 
+        }).reduce((acc, file) => {
+          const ext = path.extname(file).toLowerCase();
+          if (ext) {
+            acc[ext] = (acc[ext] || 0) + 1;
           }
-          
-          // Determine main language
-          const fileTypes = glob.sync('**/*', { 
-            ignore: ['node_modules/**', '.git/**'],
-            nodir: true 
-          }).reduce((acc, file) => {
-            const ext = path.extname(file).toLowerCase();
-            if (ext) {
-              acc[ext] = (acc[ext] || 0) + 1;
-            }
-            return acc;
-          }, {});
-          
-          // Sort by count
-          const entries = Object.entries(fileTypes);
-          entries.sort((a, b) => b[1] - a[1]);
-          const languages = entries.slice(0, 3).map(([ext]) => {
-            const langMap = {
-              '.js': 'JavaScript',
-              '.ts': 'TypeScript',
-              '.py': 'Python',
-              '.rb': 'Ruby',
-              '.go': 'Go',
-              '.java': 'Java',
-              '.php': 'PHP',
-              '.cs': 'C#',
-              '.cpp': 'C++',
-              '.c': 'C',
-              '.html': 'HTML',
-              '.css': 'CSS',
-              '.md': 'Markdown',
-              '.json': 'JSON',
-              '.yml': 'YAML',
-              '.yaml': 'YAML',
-              '.xml': 'XML',
-              '.sh': 'Shell',
-              '.rs': 'Rust',
-              '.swift': 'Swift',
-              '.kt': 'Kotlin'
-            };
-            return langMap[ext] || ext.replace('.', '');
-          });
-          
-          // Find important directories
-          const dirs = glob.sync('*/', { 
-            ignore: ['node_modules/', '.git/']
-          }).map(dir => dir.replace(/\\/$/, ''));
-          
-          // Common important directory types
-          const commonDirs = {
-            'src': 'Source code directory',
-            'lib': 'Library code directory',
-            'app': 'Application code directory',
-            'dist': 'Distribution/compiled files',
-            'build': 'Build output directory',
-            'public': 'Public assets directory',
-            'assets': 'Static assets directory',
-            'docs': 'Documentation directory',
-            'test': 'Test files directory',
-            'tests': 'Test files directory',
-            'scripts': 'Utility scripts',
-            'config': 'Configuration files',
-            'examples': 'Example code or usage',
-            'tools': 'Development tools'
+          return acc;
+        }, {});
+        
+        // Sort by count
+        const entries = Object.entries(fileTypes);
+        entries.sort((a, b) => b[1] - a[1]);
+        const languages = entries.slice(0, 3).map(([ext]) => {
+          const langMap = {
+            '.js': 'JavaScript',
+            '.ts': 'TypeScript',
+            '.py': 'Python',
+            '.rb': 'Ruby',
+            '.go': 'Go',
+            '.java': 'Java',
+            '.php': 'PHP',
+            '.cs': 'C#',
+            '.cpp': 'C++',
+            '.c': 'C',
+            '.html': 'HTML',
+            '.css': 'CSS',
+            '.md': 'Markdown',
+            '.json': 'JSON',
+            '.yml': 'YAML',
+            '.yaml': 'YAML',
+            '.xml': 'XML',
+            '.sh': 'Shell',
+            '.rs': 'Rust',
+            '.swift': 'Swift',
+            '.kt': 'Kotlin'
           };
-          
-          // Find important files
-          const importantFiles = [];
-          const commonFiles = [
-            'README.md', 'LICENSE', 'package.json', 'tsconfig.json',
-            'jest.config.js', '.eslintrc.js', '.prettierrc', 'webpack.config.js',
-            'vite.config.js', 'next.config.js', 'babel.config.js',
-            'rollup.config.js', 'requirements.txt', 'setup.py', 'Gemfile',
-            'composer.json', 'Cargo.toml', 'go.mod', 'Makefile',
-            'docker-compose.yml', 'Dockerfile'
-          ];
-          
-          commonFiles.forEach(file => {
-            if (fs.existsSync(file)) {
-              let description = '';
-              switch (file) {
-                case 'README.md': description = 'Project documentation'; break;
-                case 'LICENSE': description = 'License information'; break;
-                case 'package.json': description = 'Node.js dependencies and scripts'; break;
-                case 'tsconfig.json': description = 'TypeScript configuration'; break;
-                case 'requirements.txt': description = 'Python dependencies'; break;
-                case 'setup.py': description = 'Python package configuration'; break;
-                case 'Gemfile': description = 'Ruby dependencies'; break;
-                case 'composer.json': description = 'PHP dependencies'; break;
-                case 'Cargo.toml': description = 'Rust package manifest'; break;
-                case 'go.mod': description = 'Go module definition'; break;
-                case 'Makefile': description = 'Build automation'; break;
-                case 'docker-compose.yml': description = 'Docker services configuration'; break;
-                case 'Dockerfile': description = 'Docker container definition'; break;
-                default: description = 'Configuration file';
-              }
-              importantFiles.push({ file, description });
+          return langMap[ext] || ext.replace('.', '');
+        });
+        
+        // Find important directories
+        const dirs = glob.sync('*/', { 
+          ignore: ['node_modules/', '.git/']
+        }).map(dir => dir.replace(/\/$/, ''));
+        
+        // Common important directory types
+        const commonDirs = {
+          'src': 'Source code directory',
+          'lib': 'Library code directory',
+          'app': 'Application code directory',
+          'dist': 'Distribution/compiled files',
+          'build': 'Build output directory',
+          'public': 'Public assets directory',
+          'assets': 'Static assets directory',
+          'docs': 'Documentation directory',
+          'test': 'Test files directory',
+          'tests': 'Test files directory',
+          'scripts': 'Utility scripts',
+          'config': 'Configuration files',
+          'examples': 'Example code or usage',
+          'tools': 'Development tools'
+        };
+        
+        // Find important files
+        const importantFiles = [];
+        const commonFiles = [
+          'README.md', 'LICENSE', 'package.json', 'tsconfig.json',
+          'jest.config.js', '.eslintrc.js', '.prettierrc', 'webpack.config.js',
+          'vite.config.js', 'next.config.js', 'babel.config.js',
+          'rollup.config.js', 'requirements.txt', 'setup.py', 'Gemfile',
+          'composer.json', 'Cargo.toml', 'go.mod', 'Makefile',
+          'docker-compose.yml', 'Dockerfile'
+        ];
+        
+        commonFiles.forEach(file => {
+          if (fs.existsSync(file)) {
+            let description = '';
+            switch (file) {
+              case 'README.md': description = 'Project documentation'; break;
+              case 'LICENSE': description = 'License information'; break;
+              case 'package.json': description = 'Node.js dependencies and scripts'; break;
+              case 'tsconfig.json': description = 'TypeScript configuration'; break;
+              case 'requirements.txt': description = 'Python dependencies'; break;
+              case 'setup.py': description = 'Python package configuration'; break;
+              case 'Gemfile': description = 'Ruby dependencies'; break;
+              case 'composer.json': description = 'PHP dependencies'; break;
+              case 'Cargo.toml': description = 'Rust package manifest'; break;
+              case 'go.mod': description = 'Go module definition'; break;
+              case 'Makefile': description = 'Build automation'; break;
+              case 'docker-compose.yml': description = 'Docker services configuration'; break;
+              case 'Dockerfile': description = 'Docker container definition'; break;
+              default: description = 'Configuration file';
             }
+            importantFiles.push({ file, description });
+          }
+        });
+        
+        // Documentation links
+        const docFiles = glob.sync('{docs/**/*.md,*.md}', { 
+          ignore: ['node_modules/**', 'README.md', 'LICENSE.md']
+        });
+        
+        // Generate content for llms.md
+        let output = `# ${repoName}\n`;
+        output += `> ${description || 'Repository for ' + repoName}\n\n`;
+        output += `## Overview\n`;
+        output += `- Key Technologies: ${languages.join(', ') || 'Not specified'}\n`;
+        output += `- Main Functionality: ${description ? description.split('.')[0] : 'Not specified'}\n\n`;
+        
+        output += `## Core Directories\n`;
+        dirs.forEach(dir => {
+          const desc = commonDirs[dir] || `${dir} directory`;
+          output += `- [${dir}/](/${dir}/): ${desc}\n`;
+        });
+        output += '\n';
+        
+        output += `## Important Files\n`;
+        importantFiles.forEach(({ file, description }) => {
+          output += `- [${file}](/${file}): ${description}\n`;
+        });
+        if (!fs.existsSync('README.md')) {
+          output += `- [README.md](/README.md): Project documentation\n`;
+        }
+        output += '\n';
+        
+        output += `## Documentation\n`;
+        if (docFiles.length > 0) {
+          docFiles.forEach(file => {
+            const basename = path.basename(file);
+            const title = path.basename(file, '.md')
+              .replace(/-/g, ' ')
+              .replace(/^./, c => c.toUpperCase());
+            output += `- [${basename}](/${file}): ${title}\n`;
           });
-          
-          // Documentation links
-          const docFiles = glob.sync('{docs/**/*.md,*.md}', { 
-            ignore: ['node_modules/**', 'README.md', 'LICENSE.md']
-          });
-          
-          // Generate content for llms.md
-          const output = `# ${repoName}
-> ${description || 'Repository for ' + repoName}
-
-## Overview
-- Key Technologies: ${languages.join(', ') || 'Not specified'}
-- Main Functionality: ${description ? description.split('.')[0] : 'Not specified'}
-
-## Core Directories
-${dirs.map(dir => {
-  const desc = commonDirs[dir] || `${dir} directory`;
-  return `- [${dir}/](/${dir}/): ${desc}`;
-}).join('\\n')}
-
-## Important Files
-${importantFiles.map(({ file, description }) => 
-  `- [${file}](/${file}): ${description}`
-).join('\\n')}
-${fs.existsSync('README.md') ? '' : '- [README.md](/README.md): Project documentation'}
-
-## Documentation
-${docFiles.length > 0 ? docFiles.map(file => 
-  `- [${path.basename(file)}](/${file}): ${path.basename(file, '.md').replace(/-/g, ' ').replace(/^./, c => c.toUpperCase())}`
-).join('\\n') : '- No specific documentation files found'}
-
-## Optional
-- Consider adding more information to help LLMs understand your repository
-`;
-          
-          fs.writeFileSync('${process.env.GITHUB_WORKSPACE}/${process.env.INPUT_OUTPUT_PATH}', output);
-          console.log('Generated llms.md at ${process.env.INPUT_OUTPUT_PATH}');
-          
-          // Create summary
-          const summary = {
-            repoName,
-            description,
-            version,
-            languages,
-            directories: dirs.length,
-            importantFiles: importantFiles.length,
-            docFiles: docFiles.length,
-            outputPath: '${process.env.INPUT_OUTPUT_PATH}'
-          };
-          
-          fs.writeFileSync(process.env.GITHUB_OUTPUT, 
-            Object.entries(summary)
-              .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
-              .join('\\n')
-          );
-        "
+        } else {
+          output += `- No specific documentation files found\n`;
+        }
+        output += '\n';
+        
+        output += `## Optional\n`;
+        output += `- Consider adding more information to help LLMs understand your repository\n`;
+        
+        // Write the output file
+        const outputPath = process.argv[2] || 'llms.md';
+        fs.writeFileSync(outputPath, output);
+        console.log(`Generated llms.md at ${outputPath}`);
+        
+        // Export summary
+        const summary = {
+          repoName,
+          description,
+          version,
+          languages,
+          directories: dirs.length,
+          importantFiles: importantFiles.length,
+          docFiles: docFiles.length,
+          outputPath
+        };
+        
+        // Write summary to a file that GitHub Actions can read
+        if (process.env.GITHUB_OUTPUT) {
+          const summaryOutput = Object.entries(summary)
+            .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
+            .join('\n');
+          fs.writeFileSync(process.env.GITHUB_OUTPUT, summaryOutput);
+        }
+        EOF
+    
+    - name: Install dependencies
+      run: npm install --no-package-lock glob
+    
+    - name: Generate llms.md
+      run: node generate-llms-md.js "${{ inputs.output_path }}"
       env:
         INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
 

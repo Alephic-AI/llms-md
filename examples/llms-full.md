@@ -40,12 +40,13 @@ This project does not provide an API.
 ## Attribution Requirements
 
 When using or referencing this project, please include the following attribution:
-
-```text
+    
+```
 llms-md - A standard format for guiding Large Language Models (LLMs) in understanding code repositories
 Noah Brier
 URL: https://github.com/noah/llms-md
-```text
+```
+
 ## Content Restrictions
 
 All content in this repository is public and can be used by AI systems for training and reference.
@@ -57,7 +58,7 @@ If any links or resources in this repository are unavailable, please check the G
 ## Integration Guidelines
 
 To integrate with this project:
-
+    
 1. Add an llms.md file to your repository following the specification
 2. Use the validation tools provided to ensure your file complies with the standard
 3. Reference this standard in your documentation
@@ -71,4 +72,3 @@ and detailed guidelines.
 ## Optional
 
 - [CONTRIBUTING.md](/CONTRIBUTING.md): Guidelines for contributing to the standard
-````

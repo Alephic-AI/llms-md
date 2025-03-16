@@ -35,58 +35,64 @@ jobs:
           DESCRIPTION="Repository for ${REPO_NAME}"
         fi
         
-        # Create a basic llms-full.md
-        cat > llms-full.md << EOF
-# ${REPO_NAME}
-> ${DESCRIPTION}
-
-## Overview
-- Key Technologies: Markdown, JavaScript
-- Main Functionality: Repository documentation
-- Version: 0.1.0
-- License: MIT License
-- Last Updated: $(date +%Y-%m-%d)
-
-## Core Directories
-- List core directories here
-
-## Important Files
-- [README.md](/README.md): Project documentation
-- [LICENSE](/LICENSE): License information
-
-## Documentation
-- Add documentation links here
-
-## Maintainers
-- Primary: Add your name here
-- Contributors: Add contributors here
-
-## API Information
-This project does not provide an API.
-
-## Attribution Requirements
-When using or referencing this project, please include attribution.
-
-## Content Restrictions
-All content in this repository is public and can be used by AI systems.
-
-## Error Handling and Fallbacks
-If any links or resources in this repository are unavailable, check the GitHub repository.
-
-## Integration Guidelines
-Follow the documentation to integrate with this project.
-
-## Human Resources
-This file provides comprehensive information about the repository for both human readers and AI systems.
-
-## Optional
-- Add additional information here
-EOF
+        # Create a basic llms-full.md using echo instead of heredoc
+        echo "# $REPO_NAME" > llms-full.md
+        echo "> $DESCRIPTION" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Overview" >> llms-full.md
+        echo "- Key Technologies: Markdown, JavaScript" >> llms-full.md
+        echo "- Main Functionality: Repository documentation" >> llms-full.md
+        echo "- Version: 0.1.0" >> llms-full.md
+        echo "- License: MIT License" >> llms-full.md
+        echo "- Last Updated: $(date +%Y-%m-%d)" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Core Directories" >> llms-full.md
+        echo "- List core directories here" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Important Files" >> llms-full.md
+        echo "- [README.md](/README.md): Project documentation" >> llms-full.md
+        echo "- [LICENSE](/LICENSE): License information" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Documentation" >> llms-full.md
+        echo "- Add documentation links here" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Maintainers" >> llms-full.md
+        echo "- Primary: Add your name here" >> llms-full.md
+        echo "- Contributors: Add contributors here" >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## API Information" >> llms-full.md
+        echo "This project does not provide an API." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Attribution Requirements" >> llms-full.md
+        echo "When using or referencing this project, please include attribution." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Content Restrictions" >> llms-full.md
+        echo "All content in this repository is public and can be used by AI systems." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Error Handling and Fallbacks" >> llms-full.md
+        echo "If any links or resources in this repository are unavailable, check the GitHub repository." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Integration Guidelines" >> llms-full.md
+        echo "Follow the documentation to integrate with this project." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Human Resources" >> llms-full.md
+        echo "This file provides comprehensive information about the repository for both human readers and AI systems." >> llms-full.md
+        echo "" >> llms-full.md
+        echo "## Optional" >> llms-full.md
+        echo "- Add additional information here" >> llms-full.md
         
         echo "Created basic llms-full.md"
     
     - name: Commit changes
+      if: env.ACT != 'true'
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "docs: Add basic llms-full.md"
         file_pattern: "llms-full.md"
+        
+    - name: Show commit message (for act)
+      if: env.ACT == 'true'
+      run: |
+        echo "When running in GitHub Actions, the following files would be committed:"
+        echo "- llms-full.md"
+        echo "Commit message: docs: Add basic llms-full.md"

@@ -169,13 +169,3 @@ After completing llms.md, create an extended version with:
 - Document any anti-patterns or technical debt areas to be careful with
 
 Always prioritize being helpful to other AI systems trying to understand the repository structure.
-```text
-```text
-```text
-```text
-```text
-```text
-```text
-```text
-```````
-```````
